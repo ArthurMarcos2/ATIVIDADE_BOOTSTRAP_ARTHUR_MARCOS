@@ -11,7 +11,7 @@
          <div class="alert alert-info alert-dismissible fade show" role="alert">
             <strong>Pendência identificada:</strong> Gabriel Souza (3ºA) está com o livro "1984" em atraso há 
             <span class="text-danger fw-bold">20 anos</span> e precisa regularizar a devolução.
-            <button class="btn-close" type="button" data-bs-dismiss="alert"></button>
+            <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Fechar"></button>
         </div>
 
         <div class="d-flex justify-content-between align-items-center mb-4">
@@ -32,7 +32,7 @@
                             <th>Data de Empréstimo</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="tabelaEmprestimos">
                         <tr>
                             <td>Ana Clara (8ºC)</td>
                             <td>Capitães da Areia</td>
@@ -72,5 +72,90 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="modalNovoProjeto" tabindex="-1" aria-labelledby="modalNovoProjetoLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalNovoProjetoLabel">Registrar Novo Empréstimo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <form id="formNovoEmprestimo">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="inputAluno" class="form-label">Aluno e Turma</label>
+                            <input type="text" class="form-control" id="inputAluno" placeholder="Ex: Maria Silva (2ºA)" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="inputLivro" class="form-label">Nome do Livro</label>
+                            <input type="text" class="form-control" id="inputLivro" placeholder="Ex: Vidas Secas" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="inputStatus" class="form-label">Status</label>
+                            <select class="form-select" id="inputStatus" required>
+                                <option value="Pendente" selected>Pendente</option>
+                                <option value="Em atraso">Em atraso</option>
+                                <option value="Devolvido">Devolvido</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="inputData" class="form-label">Data de Empréstimo</label>
+                            <input type="date" class="form-control" id="inputData" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Salvar Registro</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('formNovoEmprestimo');
+            if (form) {
+                form.addEventListener('submit', function(event) {
+                    event.preventDefault();
+
+                    const aluno = document.getElementById('inputAluno').value;
+                    const livro = document.getElementById('inputLivro').value;
+                    const status = document.getElementById('inputStatus').value;
+                    const dataRaw = document.getElementById('inputData').value;
+
+                    const partesData = dataRaw.split('-');
+                    const dataFormatada = `${partesData[2]}/${partesData[1]}/${partesData[0].slice(-2)}`;
+
+                    let classeBadge = 'bg-warning';
+                    if (status === 'Em atraso') {
+                        classeBadge = 'bg-danger text-white';
+                    } else if (status === 'Devolvido') {
+                        classeBadge = 'bg-success';
+                    }
+
+                    const tbody = document.getElementById('tabelaEmprestimos');
+                    const novaLinha = document.createElement('tr');
+                    novaLinha.innerHTML = `
+                        <td>${aluno}</td>
+                        <td>${livro}</td>
+                        <td><span class="badge ${classeBadge}">${status}</span></td>
+                        <td>${dataFormatada}</td>
+                    `;
+
+                    tbody.appendChild(novaLinha);
+
+                    this.reset();
+                    const modalElement = document.getElementById('modalNovoProjeto');
+                    const modalInstance = bootstrap.Modal.getInstance(modalElement);
+                    if (modalInstance) {
+                        modalInstance.hide();
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>
